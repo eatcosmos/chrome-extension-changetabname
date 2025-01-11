@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 import requests
 import json
+from datetime import datetime
 
 def run_command(command):
     """运行命令并返回输出"""
@@ -14,6 +15,32 @@ def run_command(command):
         print(f"命令执行失败: {e.cmd}")
         print(f"错误信息: {e.stderr}")
         sys.exit(1)
+
+def check_remote_exists():
+    """检查是否已经设置了远程仓库"""
+    try:
+        remote = run_command('git remote get-url origin')
+        return True
+    except:
+        return False
+
+def update_repo():
+    """更新仓库：添加所有更改并提交"""
+    print("添加文件到暂存区...")
+    run_command('git add .')
+    
+    # 检查是否有文件要提交
+    status = run_command('git status --porcelain')
+    if status:
+        print("提交更改...")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        run_command(f'git commit -m "Update: {timestamp}"')
+        print("推送更改...")
+        run_command('git push')
+        print("更新完成！")
+    else:
+        print("没有需要提交的更改。")
+    return
 
 def main():
     # 获取当前目录名
@@ -33,6 +60,11 @@ def main():
                 run_command('git branch -m master main')  # 如果是 master，重命名为 main
         except:
             pass
+        
+        # 如果远程仓库已存在，直接进行更新
+        if check_remote_exists():
+            update_repo()
+            return
 
     # 检查环境变量中是否存在 GitHub token
     github_token = os.getenv('GITHUB_TOKEN')
