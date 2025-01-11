@@ -12,6 +12,20 @@ def read_manifest():
 
 def create_package():
     """创建发布包"""
+    # 确保 .gitignore 包含 dist 目录
+    gitignore_path = '.gitignore'
+    dist_ignore = 'dist/'
+    
+    if os.path.exists(gitignore_path):
+        with open(gitignore_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        if dist_ignore not in content:
+            with open(gitignore_path, 'a', encoding='utf-8') as f:
+                f.write(f'\n{dist_ignore}\n')
+    else:
+        with open(gitignore_path, 'w', encoding='utf-8') as f:
+            f.write(f'{dist_ignore}\n')
+    
     # 获取版本号
     version = read_manifest()
     
