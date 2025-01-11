@@ -20,9 +20,9 @@ def check_remote_exists():
     """检查是否已经设置了远程仓库"""
     try:
         remote = run_command('git remote get-url origin')
-        return True
+        return True, remote
     except:
-        return False
+        return False, None
 
 def update_repo():
     """更新仓库：添加所有更改并提交"""
@@ -40,6 +40,10 @@ def update_repo():
         print("更新完成！")
     else:
         print("没有需要提交的更改。")
+    
+    # 获取并打印仓库 URL
+    remote_url = run_command('git remote get-url origin')
+    print(f"\n仓库地址: {remote_url}")
     return
 
 def main():
@@ -62,7 +66,8 @@ def main():
             pass
         
         # 如果远程仓库已存在，直接进行更新
-        if check_remote_exists():
+        exists, remote_url = check_remote_exists()
+        if exists:
             update_repo()
             return
 
