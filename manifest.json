@@ -1,15 +1,22 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "DeepSeek Title Changer",
   "version": "1.0",
-  "description": "修改 DeepSeek 对话页面的标题",
+  "description": "智能同步 DeepSeek 对话标题！让多标签页管理更轻松，快速定位您的重要对话。再也不用在众多相似标签中寻找特定对话了。",
+  "author": "eatcosmos",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
-    "tabs",
+    "tabs"
+  ],
+  "host_permissions": [
     "*://chat.deepseek.com/*"
   ],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
