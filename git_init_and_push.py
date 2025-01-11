@@ -23,9 +23,16 @@ def main():
     # 检查是否已经初始化了 Git
     if not os.path.exists('.git'):
         print("初始化 Git 仓库...")
-        run_command('git init')
+        run_command('git init -b main')  # 使用 main 作为默认分支
     else:
         print("Git 仓库已存在")
+        # 确保当前分支是 main
+        try:
+            current_branch = run_command('git rev-parse --abbrev-ref HEAD')
+            if current_branch != 'main':
+                run_command('git branch -m master main')  # 如果是 master，重命名为 main
+        except:
+            pass
 
     # 检查环境变量中是否存在 GitHub token
     github_token = os.getenv('GITHUB_TOKEN')
@@ -33,7 +40,7 @@ def main():
         print("请设置 GITHUB_TOKEN 环境变量")
         print("你可以在 GitHub 的 Settings -> Developer settings -> Personal access tokens 中创建一个token")
         print("然后运行: ")
-        print("Windows: setx GITHUB_TOKEN 你的token")
+        print("Windows: [Environment]::SetEnvironmentVariable('GITHUB_TOKEN', '你的token', 'User')")
         print("Linux/Mac: export GITHUB_TOKEN=你的token")
         sys.exit(1)
 
@@ -44,7 +51,8 @@ def main():
     }
     data = {
         'name': repo_name,
-        'private': False
+        'private': False,
+        'default_branch': 'main'  # 设置默认分支为 main
     }
     
     print(f"正在创建 GitHub 仓库: {repo_name}...")
@@ -75,11 +83,20 @@ def main():
     print("添加文件到暂存区...")
     run_command('git add .')
     
-    print("提交更改...")
-    run_command('git commit -m "Initial commit"')
-    
+    # 检查是否有文件要提交
+    status = run_command('git status --porcelain')
+    if status:
+        print("提交更改...")
+        run_command('git commit -m "Initial commit"')
+    else:
+        print("没有需要提交的更改，尝试强制推送...")
+        
     print("推送到 GitHub...")
-    run_command('git push -u origin master')
+    try:
+        run_command('git push -u origin main')
+    except:
+        print("尝试强制推送...")
+        run_command('git push -u origin main --force')
     
     print(f"\n完成！仓库已推送到: {remote_url}")
 
