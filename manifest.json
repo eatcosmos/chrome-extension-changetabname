@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "DeepSeek Title Changer",
+  "version": "1.0",
+  "description": "修改 DeepSeek 对话页面的标题",
+  "permissions": [
+    "tabs",
+    "*://chat.deepseek.com/*"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://chat.deepseek.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+} 
